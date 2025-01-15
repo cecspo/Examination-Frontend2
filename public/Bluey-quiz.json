@@ -1,0 +1,27 @@
+[
+  {
+    "question": "Vad heter barnprogrammet med färgglada hundar?",
+    "options": ["Bluey", "Superkatthjältarna", "Snövit", "Lejonkungen"],
+    "answer": "Bluey"
+  },
+  {
+    "question": "Hur många bor det i Blueys familj?",
+    "options": [2, 5, 4, 1],
+    "answer": 4
+  },
+  {
+    "question": "Vad heter Blueys lillasyster?",
+    "options": ["Dumdum", "Bingo", "Ham", "Poff"],
+    "answer": "Bingo"
+  },
+  {
+    "question": "Hur låter en hund?",
+    "options": ["Ssssh", "Grr", "Voff", "Mjau"],
+    "answer": "Voff"
+  },
+  {
+    "question": "Vilken färg har Bluey?",
+    "options": ["Blå", "Gul", "Röd", "Brun"],
+    "answer": "Blå"
+  }
+]
