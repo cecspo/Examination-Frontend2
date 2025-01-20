@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './BlueyQuiz.css';
+import QuizPoints from './QuizPoints';
 
 const BlueyQuiz = () => {
   const [questions, setQuestions] = useState([]);
@@ -7,8 +8,8 @@ const BlueyQuiz = () => {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [isAnswered, setIsAnswered] = useState(false);
   const [score, setScore] = useState(0);
+  const [isGameOver, setIsGameOver] = useState(false);
 
-  // Ladda frågorna från JSON-filen
   useEffect(() => {
     fetch('/Bluey-quiz.json')
       .then(response => response.json())
@@ -26,10 +27,32 @@ const BlueyQuiz = () => {
   };
 
   const nextQuestion = () => {
+    if (currentQuestionIndex === questions.length - 1) {
+      setIsGameOver(true); // Sätt spelet som slut
+    } else {
+      setIsAnswered(false);
+      setSelectedAnswer(null);
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    }
+  };
+
+  const replayQuiz = () => {
+    setScore(0);
+    setCurrentQuestionIndex(0);
     setIsAnswered(false);
     setSelectedAnswer(null);
-    setCurrentQuestionIndex(currentQuestionIndex + 1);
+    setIsGameOver(false);
   };
+
+  if (isGameOver) {
+    return (
+      <QuizPoints
+        score={score}
+        totalQuestions={questions.length}
+        onReplay={replayQuiz}
+      />
+    );
+  }
 
   const currentQuestion = questions[currentQuestionIndex];
 
@@ -56,8 +79,8 @@ const BlueyQuiz = () => {
           </div>
           {isAnswered && (
             <div className="mt-3 text-center">
-              <button className="btn btn-primary mt-3" onClick={nextQuestion} disabled={currentQuestionIndex === questions.length - 1}>
-                {currentQuestionIndex === questions.length - 1 ? 'Räkna ihop poängen' : 'Nästa fråga'}
+              <button className="btn btn-primary mt-3" onClick={nextQuestion}>
+                {currentQuestionIndex === questions.length - 1 ? 'Se ditt resultat' : 'Nästa fråga'}
               </button>
             </div>
           )}
