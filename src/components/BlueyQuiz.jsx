@@ -56,13 +56,8 @@ const BlueyQuiz = () => {
           </div>
           {isAnswered && (
             <div className="mt-3 text-center">
-              {selectedAnswer === currentQuestion.answer ? (
-                <div className="alert alert-success">Rätt svar!</div>
-              ) : (
-                <div className="alert alert-danger">Fel svar, försök igen!</div>
-              )}
               <button className="btn btn-primary mt-3" onClick={nextQuestion} disabled={currentQuestionIndex === questions.length - 1}>
-                {currentQuestionIndex === questions.length - 1 ? 'Slutför Quiz' : 'Nästa fråga'}
+                {currentQuestionIndex === questions.length - 1 ? 'Räkna ihop poängen' : 'Nästa fråga'}
               </button>
             </div>
           )}

@@ -1,8 +1,39 @@
+#root {
+    position: relative;
+    text-align: center;
+    margin: 0 auto;
+}
+
 body{
     background-image: url(src/components/images/Background.webp);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     height: 100vh;
+}
+
+.footerName {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding-right: 20px;
+}
+
+.card {
+    --bs-card-bg: transparent; 
+    --bs-card-border-color: transparent; 
+    --bs-card-border-width: 0; 
+    background-color: transparent !important;
+    border: none !important; 
+}
+
+h5 {
+    padding-bottom: 10px;
+}
+
+.btn {
+    background-color: #3886a8 !important;
+    --bs-border-radius: 2rem;
+    border-style: none !important;
 }
 
