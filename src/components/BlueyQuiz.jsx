@@ -9,6 +9,7 @@ const BlueyQuiz = () => {
   const [isAnswered, setIsAnswered] = useState(false);
   const [score, setScore] = useState(0);
   const [isGameOver, setIsGameOver] = useState(false);
+  const [results, setResults] = useState([]); 
 
   useEffect(() => {
     fetch('/Bluey-quiz.json')
@@ -20,15 +21,25 @@ const BlueyQuiz = () => {
     if (!isAnswered) {
       setSelectedAnswer(answer);
       setIsAnswered(true);
-      if (answer === questions[currentQuestionIndex].answer) {
-        setScore(score + 1);
-      }
+
+      const currentQuestion = questions[currentQuestionIndex];
+      const isCorrect = answer === currentQuestion.answer;
+
+      setScore(prevScore => isCorrect ? prevScore + 1 : prevScore);
+      setResults(prevResults => [
+        ...prevResults,
+        {
+          question: currentQuestion.question,
+          userAnswer: answer,
+          correctAnswer: currentQuestion.answer
+        }
+      ]);
     }
   };
 
   const nextQuestion = () => {
     if (currentQuestionIndex === questions.length - 1) {
-      setIsGameOver(true); // Sätt spelet som slut
+      setIsGameOver(true); 
     } else {
       setIsAnswered(false);
       setSelectedAnswer(null);
@@ -41,6 +52,7 @@ const BlueyQuiz = () => {
     setCurrentQuestionIndex(0);
     setIsAnswered(false);
     setSelectedAnswer(null);
+    setResults([]);
     setIsGameOver(false);
   };
 
@@ -50,6 +62,7 @@ const BlueyQuiz = () => {
         score={score}
         totalQuestions={questions.length}
         onReplay={replayQuiz}
+        results={results}
       />
     );
   }
@@ -80,7 +93,7 @@ const BlueyQuiz = () => {
           {isAnswered && (
             <div className="mt-3 text-center">
               <button className="btn btn-primary mt-3" onClick={nextQuestion}>
-                {currentQuestionIndex === questions.length - 1 ? 'Se ditt resultat' : 'Nästa fråga'}
+                {currentQuestionIndex === questions.length - 1 ? 'Slutför quiz' : 'Nästa fråga'}
               </button>
             </div>
           )}
