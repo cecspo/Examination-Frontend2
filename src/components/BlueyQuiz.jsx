@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './BlueyQuiz.css';
+import QuizPoints from './QuizPoints';
 
 const BlueyQuiz = () => {
   const [questions, setQuestions] = useState([]);
@@ -7,8 +8,9 @@ const BlueyQuiz = () => {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [isAnswered, setIsAnswered] = useState(false);
   const [score, setScore] = useState(0);
+  const [isGameOver, setIsGameOver] = useState(false);
+  const [results, setResults] = useState([]); 
 
-  // Ladda frågorna från JSON-filen
   useEffect(() => {
     fetch('/Bluey-quiz.json')
       .then(response => response.json())
@@ -19,17 +21,51 @@ const BlueyQuiz = () => {
     if (!isAnswered) {
       setSelectedAnswer(answer);
       setIsAnswered(true);
-      if (answer === questions[currentQuestionIndex].answer) {
-        setScore(score + 1);
-      }
+
+      const currentQuestion = questions[currentQuestionIndex];
+      const isCorrect = answer === currentQuestion.answer;
+
+      setScore(prevScore => isCorrect ? prevScore + 1 : prevScore);
+      setResults(prevResults => [
+        ...prevResults,
+        {
+          question: currentQuestion.question,
+          userAnswer: answer,
+          correctAnswer: currentQuestion.answer
+        }
+      ]);
     }
   };
 
   const nextQuestion = () => {
+    if (currentQuestionIndex === questions.length - 1) {
+      setIsGameOver(true); 
+    } else {
+      setIsAnswered(false);
+      setSelectedAnswer(null);
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    }
+  };
+
+  const replayQuiz = () => {
+    setScore(0);
+    setCurrentQuestionIndex(0);
     setIsAnswered(false);
     setSelectedAnswer(null);
-    setCurrentQuestionIndex(currentQuestionIndex + 1);
+    setResults([]);
+    setIsGameOver(false);
   };
+
+  if (isGameOver) {
+    return (
+      <QuizPoints
+        score={score}
+        totalQuestions={questions.length}
+        onReplay={replayQuiz}
+        results={results}
+      />
+    );
+  }
 
   const currentQuestion = questions[currentQuestionIndex];
 
@@ -56,8 +92,8 @@ const BlueyQuiz = () => {
           </div>
           {isAnswered && (
             <div className="mt-3 text-center">
-              <button className="btn btn-primary mt-3" onClick={nextQuestion} disabled={currentQuestionIndex === questions.length - 1}>
-                {currentQuestionIndex === questions.length - 1 ? 'Räkna ihop poängen' : 'Nästa fråga'}
+              <button className="btn btn-primary mt-3" onClick={nextQuestion}>
+                {currentQuestionIndex === questions.length - 1 ? 'Slutför quiz' : 'Nästa fråga'}
               </button>
             </div>
           )}
