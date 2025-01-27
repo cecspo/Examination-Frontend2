@@ -4,12 +4,14 @@ import Footer from './components/Footer';
 
 function App() {
   return (
-    <div className="background">  
-        <div className="container">
+    // // <div className="background">  
+    //     <div className="container">
+    <>
           <BlueyQuiz/>
-        </div>
+        {/* // </div> */}
       <Footer/>    
-    </div>
+    {/* // </div> */}
+    </>
   );
 }
 

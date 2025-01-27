@@ -9,13 +9,31 @@ const BlueyQuiz = () => {
   const [isAnswered, setIsAnswered] = useState(false);
   const [score, setScore] = useState(0);
   const [isGameOver, setIsGameOver] = useState(false);
-  const [results, setResults] = useState([]); 
+  const [showResults, setShowResults] = useState(false);
+  const [results, setResults] = useState([]);
+  const [countdown, setCountdown] = useState(10);
 
   useEffect(() => {
     fetch('/Bluey-quiz.json')
-      .then(response => response.json())
-      .then(data => setQuestions(data));
+      .then((response) => response.json())
+      .then((data) => setQuestions(data));
   }, []);
+
+  useEffect(() => {
+    if (isAnswered || isGameOver) return;
+
+    const timer = setInterval(() => {
+      setCountdown((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [isAnswered, isGameOver]);
+
+  useEffect(() => {
+    if (countdown === 0 && !isAnswered) {
+      nextQuestion();
+    }
+  }, [countdown]);
 
   const handleAnswerClick = (answer) => {
     if (!isAnswered) {
@@ -25,25 +43,27 @@ const BlueyQuiz = () => {
       const currentQuestion = questions[currentQuestionIndex];
       const isCorrect = answer === currentQuestion.answer;
 
-      setScore(prevScore => isCorrect ? prevScore + 1 : prevScore);
-      setResults(prevResults => [
+      setScore((prevScore) => (isCorrect ? prevScore + 1 : prevScore));
+      setResults((prevResults) => [
         ...prevResults,
         {
           question: currentQuestion.question,
           userAnswer: answer,
-          correctAnswer: currentQuestion.answer
-        }
+          correctAnswer: currentQuestion.answer,
+        },
       ]);
     }
   };
 
   const nextQuestion = () => {
     if (currentQuestionIndex === questions.length - 1) {
-      setIsGameOver(true); 
+      setIsGameOver(true)
+      setShowResults(false);
     } else {
       setIsAnswered(false);
       setSelectedAnswer(null);
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      setCountdown(10);
+      setCurrentQuestionIndex((prev) => prev + 1);
     }
   };
 
@@ -54,46 +74,76 @@ const BlueyQuiz = () => {
     setSelectedAnswer(null);
     setResults([]);
     setIsGameOver(false);
+    setShowResults(false);
+    setCountdown(10);
   };
-
-  if (isGameOver) {
-    return (
-      <QuizPoints
-        score={score}
-        totalQuestions={questions.length}
-        onReplay={replayQuiz}
-        results={results}
-      />
-    );
-  }
 
   const currentQuestion = questions[currentQuestionIndex];
 
-  if (!currentQuestion) {
+  if (!currentQuestion && !isGameOver) {
     return <div>Laddar...</div>;
   }
 
   return (
-    <div className="container d-flex justify-content-center align-items-center min-vh-100">
+    <div className="d-flex justify-content-center align-items-center min-vh-100">
       <div className="card p-4">
         <div className="card-body">
-          <h5 className="card-title text-center">{currentQuestion.question}</h5>
-          <div className="list-group">
-            {currentQuestion.options.map((option, index) => (
+          {!isGameOver ? (
+            <>
+              <h5 className="card-title text-center">{currentQuestion.question}</h5>
+              <p className='timeText'>Tid kvar: {countdown} sekunder</p>
+              <div className="list-group">
+                {currentQuestion.options.map((option, index) => (
+                  <button
+                    key={index}
+                    className={`list-group-item list-group-item-action ${
+                      selectedAnswer === option
+                        ? option === currentQuestion.answer
+                          ? 'bg-success text-white'
+                          : 'bg-danger text-white'
+                        : ''
+                    }`}
+                    onClick={() => handleAnswerClick(option)}
+                    disabled={isAnswered}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+              {isAnswered && (
+                <div className="mt-3 text-center">
+                  {currentQuestionIndex === questions.length - 1 ? (
+                    <>
+                      <button className="btn btn-primary me-2" 
+                        onClick={() => {
+                        setShowResults(true);
+                        setIsGameOver(true);}}
+                        >Se resultat</button>
+                      <button className="btn btn-secondary" onClick={replayQuiz}>Spela om</button>
+                    </>
+                  ) : (
+                    <button className="btn btn-primary mt-3" onClick={nextQuestion}>Nästa fråga</button>
+                  )}
+                </div>
+              )}
+            </>           
+         ) : showResults ? (
+              <QuizPoints
+                score={score}
+                totalQuestions={questions.length}
+                onReplay={replayQuiz}
+                results={results}
+              />
+          ) : (
+            <div className="text-center">
               <button
-                key={index}
-                className={`list-group-item list-group-item-action ${selectedAnswer === option ? (option === currentQuestion.answer ? 'bg-success text-white' : 'bg-danger text-white') : ''}`}
-                onClick={() => handleAnswerClick(option)}
-                disabled={isAnswered}
+                className="btn btn-primary me-2"
+                onClick={() => setShowResults(true)}
               >
-                {option}
+                Se resultat
               </button>
-            ))}
-          </div>
-          {isAnswered && (
-            <div className="mt-3 text-center">
-              <button className="btn btn-primary mt-3" onClick={nextQuestion}>
-                {currentQuestionIndex === questions.length - 1 ? 'Slutför quiz' : 'Nästa fråga'}
+              <button className="btn btn-secondary" onClick={replayQuiz}>
+                Spela om
               </button>
             </div>
           )}
