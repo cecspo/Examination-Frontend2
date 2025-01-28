@@ -3,7 +3,8 @@ function Footer() {
       <>
         <footer>
             <p className="footerName">&copy; Hjärndöd mamma</p>
-        </footer>    </>
+        </footer>    
+      </>
     )
   }
   

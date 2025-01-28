@@ -87,15 +87,10 @@
                 <p className='timeText'>Tid kvar: <strong>{countdown} sekunder</strong></p>
                 <div className="list-group">
                   {currentQuestion.options.map((option, index) => (
-                    <button
-                      key={index}
-                      className={`list-group-item list-group-item-action ${
-                        selectedAnswer === option
-                          ? option === currentQuestion.answer
-                            ? 'bg-success text-white'
-                            : 'bg-danger text-white'
-                          : ''
-                      }`}
+                    <button key={index} className={`list-group-item list-group-item-action ${
+                      selectedAnswer === option ? option === currentQuestion.answer
+                        ? 'bg-success text-white' : 'bg-danger text-white' : ''
+                    }`}
                       onClick={() => handleAnswerClick(option)}
                       disabled={isAnswered}
                     >
